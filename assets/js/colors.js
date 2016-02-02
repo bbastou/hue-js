@@ -4,36 +4,6 @@
  * Come From bjohnso5/hue-hacking/src/color.js repository
  * More info : https://github.com/bjohnso5/hue-hacking 
  * Copyright (c) 2013 Bryan Johnson; Licensed MIT */
-var XYToRgb = function(x, y, bright) {
-    z = 1.0 - x - y;
-    Y = bright/255.0; // The given brightness value
-    X = (Y / y) * x;
-    Z = (Y / y) * z;
-    //console.log(x+' '+y+' '+z);
-
-    r =  X * 1.656492 - Y * 0.354851 - Z * 0.255038;
-    g = -X * 0.707196 + Y * 1.655397 + Z * 0.036152;
-    b =  X * 0.051713 - Y * 0.121364 + Z * 1.011530;
-
-
-    r = r <= 0.0031308 ? 12.92 * r : (1.0 + 0.055) * Math.pow(r, (1.0 / 2.4)) - 0.055;
-    g = g <= 0.0031308 ? 12.92 * g : (1.0 + 0.055) * Math.pow(g, (1.0 / 2.4)) - 0.055;
-    b = b <= 0.0031308 ? 12.92 * b : (1.0 + 0.055) * Math.pow(b, (1.0 / 2.4)) - 0.055;
-    
-
-    rb = Math.floor(r == 1.0 ? 255 : r * 256.0);
-    gb = Math.floor(g == 1.0 ? 255 : g * 256.0);
-    bb = Math.floor(b == 1.0 ? 255 : b * 256.0);
-
-    r2 = Math.max(0.0, Math.min(1.0, r));
-    red = Math.floor(r2 == 1.0 ? 255 : r2 * 256.0);
-    g2 = Math.max(0.0, Math.min(1.0, g));
-    green = Math.floor(g2 == 1.0 ? 255 : g2 * 256.0);
-    b2 = Math.max(0.0, Math.min(1.0, b));
-    blue = Math.floor(b2 == 1.0 ? 255 : b2 * 256.0);
-    
-    return [red, green, blue];
-};
 
 var hsbToRgb = function(hue, sat, value) {
 var satNormal = sat / 255,

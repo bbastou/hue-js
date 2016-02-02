@@ -11,6 +11,14 @@ function load_slider(){
     });
 }
 
+function load_colorpicker(){
+    $('.my-colorpicker-control').colorpicker().on('changeColor.colorpicker', function(event){
+        var rgb = event.color.toRGB()
+        var id = this.id.replace("colorpicker","");
+        setColor(id, rgb);
+    });
+}
+
 function load_switch(id_switch, on){
 var Switch = require('ios7-switch')
         , checkbox = document.querySelector('#switch'+id_switch)
@@ -22,7 +30,6 @@ var Switch = require('ios7-switch')
           changeState(id_switch, mySwitch);
         
       }, false);
-
 }
     
 function getLumieres()
@@ -44,17 +51,39 @@ function getLumieres()
                 
                 html_slider = '<div class="slider sucess"><input id="slider'+index+'" type="text" class="slider-element" value="" data-slider-max="100" data-slider-step="1" data-slider-value="'+percentage+'" data-slider-orientation="horizontal" data-slider-selection="after" data-slider-tooltip="hide" /></div>';
                 html_bright = '<div class="heading"><span class="animate-number" data-value="'+percentage+'" data-animation-duration="1200">0</span>%</div>';
+                html_colors = '<div><a id="colorpicker'+index+'"style="color: #000;" data-color="rgb('+arrayColor[0]+', '+arrayColor[1]+', '+arrayColor[2]+')" data-color-format="hex" class="my-colorpicker-control" href="#" data-colorpicker-guid="8"><i class="icon-tint icon-2x"></i></a></div>';
                 
-                $("#lights").append('<div id="light'+index+'" class="span3 "><div style="'+style+'" class="tiles added-margin"><div class="tiles-body"><div class="controller">'+html_bouton+'</div><div class="tiles-title">'+value.name+'</div>	'+html_bright+html_slider+'</div></div></div>');
+                $("#lights").append('<div id="light'+index+'" class="span3 "><div style="'+style+'" class="tiles added-margin"><div class="tiles-body"><div class="controller">'+html_bouton+'</div><div class="tiles-title">'+value.name+'</div>	'+html_bright+html_slider+html_colors+'</div></div></div>');
                 load_switch(index, value.state.on);
             });
             load_slider();
+            load_colorpicker();
         	$('.animate-number').each(function(){
         		 $(this).animateNumbers($(this).attr("data-value"), true, parseInt($(this).attr("data-animation-duration")));	
         	})
         }
     });
 }  
+
+function setColor(id, rgb)
+{ 
+    
+    var arrayColor = getXYPointFromRGB(rgb.r, rgb.g, rgb.b);
+    var xy = new Array();
+    xy.push(arrayColor.x);
+    xy.push(arrayColor.y);
+    
+    console.log('{ "on":true, "xy":'+xy+'}');
+    $.ajax({
+        url: 'http://'+ip_adresse+'/api/'+id_user+'/lights/'+id+'/state',
+        type: 'PUT',
+        data: '{ "xy":['+xy+']}',
+        success: function() {
+            $('#light'+id+' .tiles').css('background-color', 'rgb('+rgb.r+', '+rgb.g+', '+rgb.b+')');
+        }
+    });
+} 
+ 
     
 function changeStates()
 { 

@@ -23,6 +23,9 @@ body {
 
 }
 
+a:hover {
+    text-decoration: none;
+}
 .page-content {  
   margin-top: 0px;   
   padding: 0px;

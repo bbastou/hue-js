@@ -14,6 +14,32 @@ Red = new XYPoint(0.675, 0.322),
 Lime = new XYPoint(0.4091, 0.518),
 Blue = new XYPoint(0.167, 0.04),
 
+hexToRed = function (hex) {
+    return parseInt( hex.substring(0, 2), 16 );
+}
+    
+hexToGreen = function (hex) {
+    return parseInt( hex.substring(2, 4), 16 );
+}
+
+hexToBlue = function (hex) {
+    return parseInt( hex.substring(4, 6), 16 );
+}
+
+hexToRGB = function (h) {
+    var rgb = [hexToRed(h), hexToGreen(h), hexToBlue(h)];
+    return rgb;
+}
+
+componentToHex = function (c) {
+    var hex = c.toString(16);
+    return hex.length == 1 ? '0' + hex : hex;
+}
+
+rgbToHex = function (r, g, b) {
+    return componentToHex(r) + componentToHex(g) + componentToHex(b);
+}
+
 crossProduct = function (p1, p2) {
     return (p1.x * p2.y - p1.y * p2.x);
 }
@@ -80,6 +106,36 @@ getClosestPointToPoint = function (xyPoint) {
     return closestPoint;
 }
 
+
+getXYPointFromRGB = function (red, green, blue) {
+
+    var r = (red > 0.04045) ? Math.pow((red + 0.055) / (1.0 + 0.055), 2.4) : (red / 12.92),
+        g = (green > 0.04045) ? Math.pow((green + 0.055) / (1.0 + 0.055), 2.4) : (green / 12.92),
+        b = (blue > 0.04045) ? Math.pow((blue + 0.055) / (1.0 + 0.055), 2.4) : (blue / 12.92),
+
+        X = r * 0.4360747 + g * 0.3850649 + b * 0.0930804,
+        Y = r * 0.2225045 + g * 0.7168786 + b * 0.0406169,
+        Z = r * 0.0139322 + g * 0.0971045 + b * 0.7141733,
+
+        cx = X / (X + Y + Z),
+        cy = Y / (X + Y + Z);
+
+    cx = isNaN(cx) ? 0.0 : cx;
+    cy = isNaN(cy) ? 0.0 : cy;
+
+    //Check if the given XY value is within the colourreach of our lamps.
+    var xyPoint = new XYPoint(cx, cy),
+        inReachOfLamps = checkPointInLampsReach(xyPoint);
+
+    if (!inReachOfLamps) {
+        var closestPoint = getClosestPointToPoint(xyPoint);
+        cx = closestPoint.x;
+        cy = closestPoint.y;
+    }
+
+    return new XYPoint(cx, cy);
+}
+    
 getRGBFromXYAndBrightness = function (x, y, bri) {
     var xyPoint = new XYPoint(x, y);
 
